@@ -87,7 +87,37 @@
         /* Bağış Alanı */
         .donation-section { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-align: center; border-radius: 25px; padding: 4rem 2rem; }
         .bank-info { background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); max-width: 650px; margin: 2rem auto 0; padding: 2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.25); }
-        .iban-box { font-size: 1.2rem; font-weight: bold; background: white; color: var(--dark); padding: 1rem; border-radius: 10px; margin-top: 1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        
+        .clickable-text {
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .clickable-text:hover {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+        .assoc-box {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .iban-box {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: white;
+            color: var(--dark);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
 
         /* Admin Modal */
         .modal-overlay {
@@ -114,7 +144,7 @@
         <div class="logo"><i class="fa-solid fa-graduation-cap"></i> <span id="navTitle">Gümüşlük Yurdu</span></div>
         <ul class="nav-links">
             <li><a href="#hakkimizda">Hakkımızda</a></li>
-            <li><a href="#imkanlar">İmkanlar</a></li>
+            <li><a href="#imkanlar">Imkanlar</a></li>
             <li><a href="#yorumlar">Yorumlar</a></li>
             <li><a href="#bagis" class="btn-donate-nav"><i class="fa-solid fa-heart"></i> Bağış Yap</a></li>
             <li><a href="#iletisim">İletişim</a></li>
@@ -139,7 +169,7 @@
     <section id="hakkimizda">
         <h2 class="section-title">Hakkımızda</h2>
         <p id="aboutText" style="text-align: center; max-width: 850px; margin: 0 auto; font-size: 1.15rem; color: #555; line-height: 1.8;">
-            Bursa Nilüfer Çalı mahallesinde hizmet veren Gümüşlük Öğrenci Yurdu, Gümüşlük İlim Kültür ve Eğitime Yardım Derneği çatısı altında faaliyet göstermektedir. Yurdumuz, öğrencilerimizin akademik çalışmalarına odaklanabileceği, ahlaki ve sosyal değerlerle donatıldığı ideal bir yaşam merkezidir.
+            Bursa Nilüfer Çalı mahallesinde hizmet veren Gümüşlük Öğrenci Yurdu, Gümüşlük İlim Kültür ve Eğitime Yardım Derneği çatısı altında faaliyet göstermektedir. Yurdumuz, öğrencilerimizin akademik çalışmalarına odaklanabileceği, ahlaki ve sosyal değerlerle donatıldığı ideal bir yaşam merkezektir.
         </p>
     </section>
 
@@ -201,12 +231,18 @@
             <h2>Eğitime Bir Tuğla da Sen Koy</h2>
             <p>Gümüşlük İlim Kültür ve Eğitime Yardım Derneği aracılığıyla öğrencilerimizin eğitimine ve geleceğine destek olun.</p>
             <div class="bank-info">
-                <h3 id="donationAssoc">Gümüşlük İlim Kültür ve Eğitime Yardım Derneği</h3>
-                <div class="iban-box" onclick="copyIban()">
+                <!-- İsme tıklayınca sadece isim kopyalanır -->
+                <div class="assoc-box clickable-text" onclick="copyAssocName()" title="İsmi kopyalamak için tıklayın">
+                    <span id="donationAssoc">Gümüşlük İlim Kültür ve Eğitime Yardım Derneği</span> <i class="fa-regular fa-copy" style="font-size:0.9rem; margin-left:5px;"></i>
+                </div>
+                
+                <!-- IBAN'a tıklayınca sadece IBAN kopyalanır -->
+                <div class="iban-box clickable-text" onclick="copyIban()" title="IBAN'ı kopyalamak için tıklayın" style="width:100%;">
                     <span id="ibanText">TR91 0001 0026 9153 0090 1550 04</span>
                     <i class="fa-regular fa-copy"></i>
                 </div>
-                <small id="copyStatus" style="display:block; margin-top:0.8rem; opacity:0.8; font-style:italic;">(IBAN alanına tıklayarak dernek ismiyle birlikte kolayca kopyalayabilirsiniz)</small>
+                
+                <small id="copyStatus" style="display:block; margin-top:0.8rem; opacity:0.85; font-style:italic;">(İsme veya IBAN'a ayrı ayrı tıklayarak panoya kopyalayabilirsiniz)</small>
             </div>
         </div>
     </section>
@@ -267,9 +303,12 @@
                     <input type="text" id="editAddress">
                 </div>
                 <div class="form-group">
-                    <label>Bağış Dernek Adı ve IBAN</label>
+                    <label>Bağış / Dernek Adı</label>
                     <input type="text" id="editAssocName">
-                    <input type="text" id="editIban" style="margin-top:5px;">
+                </div>
+                <div class="form-group">
+                    <label>IBAN Numarası</label>
+                    <input type="text" id="editIban">
                 </div>
                 <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="saveChanges()">Değişiklikleri Kaydet</button>
             </div>
@@ -353,17 +392,29 @@
             closeAdminModal();
         }
 
-        function copyIban() {
+        // Sadece dernek ismini kopyalar
+        function copyAssocName() {
             const assocName = document.getElementById('donationAssoc').innerText;
-            const iban = document.getElementById('ibanText').innerText;
-            const fullText = assocName + " - IBAN: " + iban;
-
-            navigator.clipboard.writeText(fullText).then(() => {
+            navigator.clipboard.writeText(assocName).then(() => {
                 const status = document.getElementById('copyStatus');
-                status.innerText = "✓ Dernek İsmi ve IBAN Pano'ya Kopyalandı!";
+                status.innerText = "✓ Dernek İsmi Pano'ya Kopyalandı!";
                 status.style.color = "#2ecc71";
                 setTimeout(() => {
-                    status.innerText = "(IBAN alanına tıklayarak dernek ismiyle birlikte kolayca kopyalayabilirsiniz)";
+                    status.innerText = "(İsme veya IBAN'a ayrı ayrı tıklayarak panoya kopyalayabilirsiniz)";
+                    status.style.color = "white";
+                }, 3000);
+            });
+        }
+
+        // Sadece IBAN numarasını kopyalar
+        function copyIban() {
+            const iban = document.getElementById('ibanText').innerText;
+            navigator.clipboard.writeText(iban).then(() => {
+                const status = document.getElementById('copyStatus');
+                status.innerText = "✓ IBAN Numarası Pano'ya Kopyalandı!";
+                status.style.color = "#2ecc71";
+                setTimeout(() => {
+                    status.innerText = "(İsme veya IBAN'a ayrı ayrı tıklayarak panoya kopyalayabilirsiniz)";
                     status.style.color = "white";
                 }, 3000);
             });
